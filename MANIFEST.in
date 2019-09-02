@@ -1,0 +1,1 @@
+recursive-include osm_alkis_tool/postnas *.sql
