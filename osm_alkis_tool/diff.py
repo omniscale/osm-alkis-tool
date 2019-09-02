@@ -11,7 +11,7 @@ def load(expire_file):
         z, x, y = map(int, line.split('/'))
         boxes.append(box(*grid.tile_bbox((x, y, z))))
 
-    print json.dumps(mapping(cascaded_union(boxes)))
+    print(json.dumps(mapping(cascaded_union(boxes))))
 
 
 if __name__ == '__main__':

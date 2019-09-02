@@ -43,9 +43,10 @@ Archive:  zipfiles/zipped_xml_file.zip
 
 """
 
+here = os.path.dirname(__file__)
 
 def test_xml_zip():
-    for i, tmpfile in enumerate(zip_reader(os.path.join('zipfiles', 'xml_file.zip'))):
+    for i, tmpfile in enumerate(zip_reader(os.path.join(here, 'zipfiles', 'xml_file.zip'))):
         if i == 0:
             assert tmpfile.endswith('xml_file_1.xml'), tmpfile
             assert os.path.exists(tmpfile)
@@ -59,7 +60,7 @@ def test_xml_zip():
 
 
 def test_gzipped_xml_zip():
-    for i, tmpfile in enumerate(zip_reader(os.path.join('zipfiles', 'gzipped_xml_file.zip'))):
+    for i, tmpfile in enumerate(zip_reader(os.path.join(here, 'zipfiles', 'gzipped_xml_file.zip'))):
         if i == 0:
             assert tmpfile.endswith('gzipped_xml_file_1.xml'), tmpfile
             assert os.path.exists(tmpfile)
@@ -73,7 +74,7 @@ def test_gzipped_xml_zip():
 
 
 def test_subdir_mixed_zip():
-    for i, tmpfile in enumerate(zip_reader(os.path.join('zipfiles', 'subdir_mixed.zip'))):
+    for i, tmpfile in enumerate(zip_reader(os.path.join(here, 'zipfiles', 'subdir_mixed.zip'))):
         if i == 0:
             assert tmpfile.endswith('subdir_gzipped_xml_file.xml'), tmpfile
             assert os.path.exists(tmpfile)
@@ -90,7 +91,7 @@ def test_subdir_mixed_zip_check_file():
     def check_file(fname):
         return 'subdir_xml_file' in fname
 
-    for i, tmpfile in enumerate(zip_reader(os.path.join('zipfiles', 'subdir_mixed.zip'), check_file=check_file)):
+    for i, tmpfile in enumerate(zip_reader(os.path.join(here, 'zipfiles', 'subdir_mixed.zip'), check_file=check_file)):
         if i == 0:
             assert tmpfile.endswith('subdir_xml_file.xml'), tmpfile
             assert os.path.exists(tmpfile)

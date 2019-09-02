@@ -5,6 +5,8 @@ import csv
 import itertools
 import re
 
+from io import open
+
 import yaml
 
 VIEW_TEMPLATE = """DROP VIEW IF EXISTS  %(view_schema)s.%(view_name)s;
@@ -37,7 +39,7 @@ def osm_tables_from_db(cursor, schema):
 def read_type_mapping(type_mapping_file):
     mapping = {}
 
-    with open(type_mapping_file, 'rb') as csv_file:
+    with open(type_mapping_file, 'r', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
         for row in reader:
             source_table = row['objektart']
@@ -587,7 +589,7 @@ if __name__ == '__main__':
             alkis_schema=options.alkis_schema,
             view_schema=options.view_schema,
         )
-        print views
+        print(views)
 
     if options.osm_mapping:
         osm_tables = osm_tables_from_imposm_mapping(options.osm_mapping)
@@ -596,4 +598,4 @@ if __name__ == '__main__':
             osm_schema=options.osm_schema,
             osm_tables=osm_tables,
         )
-        print views
+        print(views)

@@ -12,7 +12,7 @@ def validate_config(ctx, param, value):
     try:
         config = load_config(value)
         return config
-    except Exception, e:
+    except Exception as e:
         raise click.BadParameter('unable to open --config %s: %s' % (value, e))
 
 @click.group(chain=True)
@@ -48,7 +48,8 @@ def cli(ctx, verbose, config, region):
 
     import sys
     import codecs
-    sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+    if (sys.version_info < (3, )):
+        sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
     logging.basicConfig(
         level=logging.INFO,
@@ -301,7 +302,7 @@ def atkis_import_views(ctx, sql_file=None):
 @click.pass_context
 def build_views(ctx):
     mappings = ctx.obj['CONFIG'].mappings()
-    print tasks.build_views(ctx.obj['CONFIG'], mappings)
+    print(tasks.build_views(ctx.obj['CONFIG'], mappings))
 
 @cli.command(name='create-combined-tables')
 @click.pass_context

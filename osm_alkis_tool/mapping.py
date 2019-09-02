@@ -45,4 +45,4 @@ class Mappings(object):
 if __name__ == '__main__':
     import sys
     mappings = Mappings.from_yaml(sys.argv[1])
-    print mappings
+    print(mappings)
