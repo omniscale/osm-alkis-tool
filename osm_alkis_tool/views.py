@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=unused-argument
+
+from __future__ import absolute_import
 
 import argparse
 import csv
@@ -225,9 +228,9 @@ def create_atkis_views(type_mapping, mappings, atkis_schema, view_schema, atkis_
         ))
     return ''.join(views)
 
-def create_osm_views(osm_schema, view_schema, osm_tables=[]):
+def create_osm_views(osm_schema, view_schema, osm_tables=None):
     views = []
-    for table in osm_tables:
+    for table in osm_tables or []:
         views.append(REDIRECT_VIEW_TEMPLATE % {
             'view_schema': view_schema,
             'view_name': table,
@@ -293,10 +296,10 @@ def typed_view(name, view, mapping, alkis_schema, view_schema):
         else:
             source_columns.append("NULL::INT AS code")
 
-        for col, type in additional_columns.items():
+        for col, typ in additional_columns.items():
             if col in mapping_data['extra_columns']:
                 sql = mapping_data['extra_columns'][col]
-                source_columns.append('%s::%s AS %s' % (sql, type, col))
+                source_columns.append('%s::%s AS %s' % (sql, typ, col))
             else:
                 source_columns.append('NULL AS ' + col)
 
@@ -305,9 +308,9 @@ def typed_view(name, view, mapping, alkis_schema, view_schema):
 
         filters = [geom_type_filter(view)]
         if 'filter' in view:
-            for exclude_table, filter in view['filter']:
+            for exclude_table, f in view['filter']:
                 if exclude_table == source_table:
-                    filters.append(filter)
+                    filters.append(f)
 
         source_columns = indent_lines(source_columns, 2)
 
@@ -379,10 +382,10 @@ def fnk_typed_view(name, view, mapping, fnk_schema, view_schema):
         else:
             source_columns.append("NULL::INT AS code")
 
-        for col, type in additional_columns.items():
+        for col, typ in additional_columns.items():
             if col in mapping_data['extra_columns']:
                 sql = mapping_data['extra_columns'][col]
-                source_columns.append('%s::%s AS %s' % (sql, type, col))
+                source_columns.append('%s::%s AS %s' % (sql, typ, col))
             else:
                 source_columns.append('NULL AS ' + col)
 
@@ -391,9 +394,9 @@ def fnk_typed_view(name, view, mapping, fnk_schema, view_schema):
 
         filters = [geom_type_filter(view)]
         if 'filter' in view:
-            for exclude_table, filter in view['filter']:
+            for exclude_table, f in view['filter']:
                 if exclude_table == source_table:
-                    filters.append(filter)
+                    filters.append(f)
 
         source_columns = indent_lines(source_columns, 2)
 
@@ -466,10 +469,10 @@ def atkis_typed_view(name, view, mapping, atkis_schema, view_schema):
         else:
             source_columns.append("NULL::INT AS code")
 
-        for col, type in additional_columns.items():
+        for col, typ in additional_columns.items():
             if col in mapping_data['extra_columns']:
                 sql = mapping_data['extra_columns'][col]
-                source_columns.append('%s::%s AS %s' % (sql, type, col))
+                source_columns.append('%s::%s AS %s' % (sql, typ, col))
             else:
                 source_columns.append('NULL AS ' + col)
 
@@ -479,9 +482,9 @@ def atkis_typed_view(name, view, mapping, atkis_schema, view_schema):
 
         filters = [geom_type_filter(view)]
         if 'filter' in view:
-            for exclude_table, filter in view['filter']:
+            for exclude_table, f in view['filter']:
                 if exclude_table == source_table:
-                    filters.append(filter)
+                    filters.append(f)
 
         source_columns = indent_lines(source_columns, 2)
 
@@ -579,23 +582,3 @@ def osm_tables_from_imposm_mapping(imposm_mapping):
     osm_tables = ['osm_' + t for t in osm_tables] # use default prefix
     return osm_tables
 
-if __name__ == '__main__':
-    options = prepare_options()
-
-    if options.type_mapping_file:
-        loaded_mapping = read_type_mapping(options.type_mapping_file)
-        views = create_views(loaded_mapping,
-            alkis_srid=options.alkis_srid,
-            alkis_schema=options.alkis_schema,
-            view_schema=options.view_schema,
-        )
-        print(views)
-
-    if options.osm_mapping:
-        osm_tables = osm_tables_from_imposm_mapping(options.osm_mapping)
-
-        views = create_osm_views(
-            osm_schema=options.osm_schema,
-            osm_tables=osm_tables,
-        )
-        print(views)

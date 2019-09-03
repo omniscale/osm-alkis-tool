@@ -1,8 +1,12 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 import glob
 import gzip
 import os
-import tempfile
 import shutil
+import tempfile
 import zipfile
 
 

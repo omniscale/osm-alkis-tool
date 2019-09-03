@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
 import logging
 
 from . config import load_config
-from . import tasks, combined
+from . import tasks
 
 log = logging.getLogger(__name__)
 
@@ -9,6 +12,7 @@ import click
 
 
 def validate_config(ctx, param, value):
+    _ = ctx, param
     try:
         config = load_config(value)
         return config
@@ -171,7 +175,7 @@ def imposm_revert_deploy(ctx):
     """
     Revert previous imposm-deploy.
     """
-    tasks.imposm_revert_deploy(ctx.obj['CONFIG'].db_config(), ctx.obj['CONFIG'])
+    tasks.imposm_revert(ctx.obj['CONFIG'].db_config(), ctx.obj['CONFIG'])
 
 @cli.command(name='imposm-run')
 @click.pass_context
@@ -311,4 +315,4 @@ def create_combined_tables(ctx):
     tasks.create_combined_region_tables(ctx.obj['CONFIG'].db_config(), ctx.obj['CONFIG'], mappings)
 
 if __name__ == '__main__':
-    cli()
+    cli()  # pylint: disable=no-value-for-parameter

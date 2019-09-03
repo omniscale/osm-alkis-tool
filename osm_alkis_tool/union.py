@@ -1,13 +1,17 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
+import argparse
+import logging
 import sys
 import uuid
-import argparse
+
+from contextlib import contextmanager
 
 import psycopg2
 import psycopg2.extensions
 
-from contextlib import contextmanager
-
-import logging
 
 
 class Mapping(object):
@@ -15,7 +19,7 @@ class Mapping(object):
     srid = -1
 
     def __init__(self, table, group_by, union_buffer=0.0, srid=-1,
-                 geometry_type='geometry', union_columns=[], extra_columns=[],
+                 geometry_type='geometry', union_columns=None, extra_columns=None,
                  postfix='union',
                  tolerances=None, _filter=None, schema='public'):
         self.source_table = '%s.%s' % (schema, table)
@@ -25,8 +29,8 @@ class Mapping(object):
         self.union_buffer = union_buffer
         self.srid = srid
         self.geometry_type = geometry_type
-        self.union_columns = union_columns
-        self.extra_columns = extra_columns
+        self.union_columns = union_columns or []
+        self.extra_columns = extra_columns or []
         self.postfix = postfix
         self.tolerances = tolerances
         self.filter = _filter
@@ -104,13 +108,13 @@ class Transaction(object):
 
     def process(self):
         for mapping in self.mappings:
-            logging.info('start union process for %s' % mapping.source_table)
+            logging.info('start union process for %s', mapping.source_table)
             self.reduce_polygons(mapping)
             self.create_simplified_tables(mapping)
 
     @contextmanager
     def savepoint(self, raise_errors=False):
-        savepoint_name = 'savepoint' + uuid.uuid4().get_hex()
+        savepoint_name = 'savepoint' + uuid.uuid4().hex
         try:
             self.cur.execute('SAVEPOINT %s' % savepoint_name)
             yield
@@ -174,7 +178,7 @@ class Transaction(object):
         self.create_table(mapping.target_table, mapping.column_types,
                           mapping.srid, mapping.geometry_type)
 
-        for i, batch in enumerate(batches):
+        for _, batch in enumerate(batches):
             # prepare querys
             st_buffer_reduce_query = self.ST_BUFFER_REDUCE_QUERY % dict(
                 target_tablename=mapping.target_table,
@@ -202,15 +206,15 @@ class Transaction(object):
             )
             # do insert
             self.cur.execute(query, {'batch': batch})
-        logging.info('union table %s created' % mapping.target_table)
+        logging.info('union table %s created', mapping.target_table)
 
     def create_simplified_tables(self, mapping):
         for suffix, tolerance in mapping.tolerances:
-            logging.info('Simplifing %s to %s with tolerance %f' % (
+            logging.info('Simplifing %s to %s with tolerance %f',
                 mapping.target_table,
                 mapping.target_table + suffix,
-                tolerance
-            ))
+                tolerance,
+            )
             self.create_table(mapping.target_table + suffix, mapping.column_types,
                               mapping.srid, mapping.geometry_type)
             filter_ = ''
@@ -284,7 +288,9 @@ def main(argv=None):
         sys.exit(1)
 
     mappings_ns = {'Mapping': Mapping}
-    execfile(options.mapping, mappings_ns)
+    with open(options.mapping) as f:
+        code = compile(f.read(), options.mapping, 'exec')
+        _ = exec(code, mappings_ns)  # pylint: disable=exec-used
     mappings = mappings_ns['mappings']
 
     transaction = Transaction(options.connection, mappings)

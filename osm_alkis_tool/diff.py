@@ -1,4 +1,9 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 import json
+
 from shapely.geometry import box, mapping
 from shapely.ops import cascaded_union
 from mapproxy.grid import tile_grid

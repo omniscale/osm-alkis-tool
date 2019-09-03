@@ -1,4 +1,9 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 import yaml
+
 from . union import Mapping as UnionMapping
 
 class Mappings(object):
@@ -41,8 +46,3 @@ class Mappings(object):
     def combined_views(self):
         return self.conf.get('combined_tables', {}).items()
 
-
-if __name__ == '__main__':
-    import sys
-    mappings = Mappings.from_yaml(sys.argv[1])
-    print(mappings)

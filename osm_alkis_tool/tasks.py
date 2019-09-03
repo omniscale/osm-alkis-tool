@@ -1,12 +1,16 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=global-statement, unused-argument
+
+from __future__ import absolute_import
+
 import codecs
+import glob
 import logging
 import os
 import re
 import subprocess
-import psycopg2
-import glob
 
-from copy import copy
+import psycopg2
 
 from . zip import dir_reader
 
@@ -38,7 +42,7 @@ def create_db(db):
     )
 
 def init_alkis_schema(db, schema, srid):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "CREATE SCHEMA IF NOT EXISTS \"%(alkis_schema)s\";" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -58,7 +62,7 @@ def init_alkis_schema(db, schema, srid):
     )
 
 def init_fnk_schema(db, schema):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "CREATE SCHEMA IF NOT EXISTS \"%(fnk_schema)s\";" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -74,7 +78,7 @@ def init_fnk_schema(db, schema):
     )
 
 def init_atkis_schema(db, schema):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "CREATE SCHEMA IF NOT EXISTS \"%(atkis_schema)s\";" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -90,7 +94,7 @@ def init_atkis_schema(db, schema):
     )
 
 def drop_alkis_schema(db, schema):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "DROP SCHEMA IF EXISTS \"%(alkis_schema)s\" CASCADE;" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -106,7 +110,7 @@ def drop_alkis_schema(db, schema):
     )
 
 def drop_fnk_schema(db, schema):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "DROP SCHEMA IF EXISTS \"%(fnk_schema)s\" CASCADE;" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -122,7 +126,7 @@ def drop_fnk_schema(db, schema):
     )
 
 def drop_atkis_schema(db, schema):
-    env = copy(os.environ)
+    env = os.environ.copy()
     env['PGPASSWORD'] = db.password
     subprocess.check_call('''
         echo "DROP SCHEMA IF EXISTS \"%(atkis_schema)s\" CASCADE;" | psql -d %(db_name)s -U %(db_username)s -h %(db_host)s -p %(db_port)s
@@ -138,7 +142,7 @@ def drop_atkis_schema(db, schema):
     )
 
 def imposm_import(db, config):
-    env = copy(os.environ)
+    env = os.environ.copy()
     subprocess.check_call('''
         %(binary)s import \
             -config %(imposm_config)s \
@@ -157,7 +161,7 @@ def imposm_import(db, config):
     )
 
 def imposm_deploy(db, config):
-    env = copy(os.environ)
+    env = os.environ.copy()
     subprocess.check_call('''
         %(binary)s import \
             -config %(imposm_config)s \
@@ -171,7 +175,7 @@ def imposm_deploy(db, config):
     )
 
 def imposm_revert(db, config):
-    env = copy(os.environ)
+    env = os.environ.copy()
     subprocess.check_call('''
         %(binary)s import \
             -config %(imposm_config)s \
@@ -185,7 +189,7 @@ def imposm_revert(db, config):
     )
 
 def imposm_run(db, config):
-    env = copy(os.environ)
+    env = os.environ.copy()
     subprocess.check_call('''
         %(binary)s run \
             -config %(config)s
@@ -208,7 +212,7 @@ def alkis_import(db, config, schema, nas_dir, force=False):
 
     create_alkis_version_table(db, schema=schema)
 
-    env = copy(os.environ)
+    env = os.environ.copy()
     # extend list of valid NAS XML schemas to improve OGR's format detection
     # otherwise it will use GML format and not fill the ax_*-tables
     env['NAS_INDICATOR'] = 'NAS-Operationen.xsd;NAS-Operationen_optional.xsd;AAA-Fachschema.xsd;ASDKOM-NAS-Operationen_1_1_NRW.xsd;aaa.xsd'
@@ -256,7 +260,7 @@ def alkis_import(db, config, schema, nas_dir, force=False):
             return False
         return True
 
-    global alkis_import_did_imports
+    global alkis_import_did_imports  #
     for fname in dir_reader(nas_dir, check_file=check_file):
         alkis_import_did_imports = True
         log.info("importing %s", fname)
@@ -265,7 +269,7 @@ def alkis_import(db, config, schema, nas_dir, force=False):
         alkis_truncate_delete_table(db, schema)
 
 def fnk_import(db, config, schema, sqlite_file):
-    env = copy(os.environ)
+    env = os.environ.copy()
 
     subprocess.check_call('''
         %(ogr2ogr)s -overwrite \
@@ -294,7 +298,7 @@ def fnk_import(db, config, schema, sqlite_file):
     )
 
 def atkis_import(db, config, schema, shp_dir):
-    env = copy(os.environ)
+    env = os.environ.copy()
 
     shp_files = glob.glob(os.path.join(shp_dir, '*.shp'))
 

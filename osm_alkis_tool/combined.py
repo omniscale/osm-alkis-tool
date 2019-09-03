@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+from __future__ import absolute_import
+
 def create_combined_tables(conn, tables, dst_schema):
     with conn.cursor() as cur:
         for table, src_schemas in tables:
