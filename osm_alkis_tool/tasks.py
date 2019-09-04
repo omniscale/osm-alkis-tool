@@ -278,6 +278,7 @@ def fnk_import(db, config, schema, sqlite_file):
             -f PostgreSQL \
             -ds_transaction \
             -gt unlimited \
+            -lco GEOMETRY_NAME=wkb_geometry \
             --config PG_USE_COPY YES \
             PG:"host=%(db_host)s port=%(db_port)s user=%(db_user)s password=%(db_password)s dbname=%(db_name)s active_schema=%(fnk_schema)s" \
             '%(file)s'
@@ -309,6 +310,7 @@ def atkis_import(db, config, schema, shp_dir):
                 -t_srs EPSG:%(db_srid)s \
                 -f PostgreSQL \
                 -ds_transaction \
+                -lco GEOMETRY_NAME=wkb_geometry \
                 --config PG_USE_COPY YES \
                 PG:"host=%(db_host)s port=%(db_port)s user=%(db_user)s password=%(db_password)s dbname=%(db_name)s active_schema=%(atkis_schema)s" \
                 '%(file)s'
