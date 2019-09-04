@@ -92,7 +92,7 @@ def read_type_mapping(type_mapping_file):
 def fnk_read_type_mapping(type_mapping_file):
     mapping = {}
 
-    with open(type_mapping_file, 'rb') as csv_file:
+    with open(type_mapping_file, 'r', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
         for row in reader:
             source_table = 'fnk'
@@ -138,7 +138,7 @@ def fnk_read_type_mapping(type_mapping_file):
 def atkis_read_type_mapping(type_mapping_file):
     mapping = {}
 
-    with open(type_mapping_file, 'rb') as csv_file:
+    with open(type_mapping_file, 'r', encoding='utf-8') as csv_file:
         reader = csv.DictReader(csv_file, delimiter=';')
         for row in reader:
             source_table = row['tabelle']
