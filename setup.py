@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='osm-alkis-tool',
-      version='0.4.4',
+      version='0.5.0',
       description='OSM/ALKIS importer/updater',
       author='Omniscale',
       author_email='info@omniscale.de',
